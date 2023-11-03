@@ -26,5 +26,12 @@ class DatabaseTests(unittest.TestCase):
         """Test that the total number of items returns the correct value."""
         self.assertEquals(self.db_mod.get_total_number_items(), 8218165, 'Test total items returns correct value')
 
+    def test_get_unique_items(self):
+        """Test that number of unique items returns correct value and value is less than or equal to total items"""
+        self.assertEquals(self.db_mod.get_unique_items(), 13935)
+        self.assertLessEqual(self.db_mod.get_unique_items, self.db_mod.get_total_number_items)
+
+    
+
 if __name__ == "__main__":
     unittest.main()

@@ -32,3 +32,11 @@ class Database:
     def get_n_data_for_PCT(self, pct, n):
         """Return all the data for a given PCT."""
         return db.session.query(PrescribingData).filter(PrescribingData.PCT == pct).limit(n).all()
+    
+    def get_unique_items(self):
+        """Return number of unique items"""
+        return int(db.session.query(func.count(PrescribingData.BNF_code.distinct())).first()[0])
+    
+    def get_average_cost(self):
+        """Return average cost"""
+        return round(float(db.session.query(func.avg(PrescribingData.ACT_cost)).first()[0]), 2)
