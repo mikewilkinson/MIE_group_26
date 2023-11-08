@@ -31,7 +31,9 @@ class DatabaseTests(unittest.TestCase):
         self.assertEquals(self.db_mod.get_unique_items(), 13935)
         self.assertLessEqual(self.db_mod.get_unique_items, self.db_mod.get_total_number_items)
 
-    
+    def test_average_calculation(self):
+        """Test that avergae calculation returns correct value"""
+        self.assertAlmostEqual(self.db_mod.get_average_cost(), 76.22)
 
 if __name__ == "__main__":
     unittest.main()
