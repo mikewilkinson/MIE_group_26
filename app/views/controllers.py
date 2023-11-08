@@ -7,7 +7,6 @@ INSTITUTION:   University of Manchester (FBMH)
 DESCRIPTION:   Views module. Renders HTML pages and passes in associated data to render on the
                dashboard.
 """
-from flask import jsonify
 
 from flask import Blueprint, render_template, request
 from app.database.controllers import Database
@@ -43,7 +42,7 @@ def home():
 
 def generate_data_for_tiles():
     """Generate the data for the four home page titles."""
-    return [db_mod.get_total_number_items()]
+    return [db_mod.get_total_number_items(), db_mod.get_unique_items(), db_mod.get_average_cost()]
 
 def generate_barchart_data():
     """Generate the data needed to populate the barchart."""
@@ -55,23 +54,3 @@ def generate_barchart_data():
     pct_codes = [r[0] for r in pct_codes]
     return [data_values, pct_codes]
 
-
-@views.route('/calculate_clearance', methods=['POST'])
-def calculate_clearance():
-    # Retrieve the data sent from the frontend
-    sex = request.form.get('sex')
-    age = float(request.form.get('age'))
-    weight = float(request.form.get('weight'))
-    serum_creatinine = float(request.form.get('serum_creatinine'))
-
-    # ... rest of the code ...
-
-
-    # Calculate creatinine clearance using the Cockcroft Gault equation
-    if sex == 'm':
-        clearance = ((140 - age) * weight) / (72 * serum_creatinine)
-    else:
-        clearance = (((140 - age) * weight) / (72 * serum_creatinine)) * 0.85
-
-    # Return the result to the frontend
-    return jsonify({'clearance': clearance})
