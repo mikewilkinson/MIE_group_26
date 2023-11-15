@@ -41,7 +41,7 @@ class Database:
         max_value = db.session.query(func.max(PrescribingData.quantity)).scalar()
         #top prescribed item = 
         # 计算百分比
-        max_value_percentage = round((max_value / column_sum) * 100,4) if column_sum else 0
+        max_value_percentage = round((max_value / column_sum) * 100,2) if column_sum else 0
         row_with_max_quantity = db.session.query(PrescribingData).filter(PrescribingData.quantity == max_value).first()
         top_prescribed_item = row_with_max_quantity.BNF_name
         return max_value_percentage,top_prescribed_item
