@@ -65,15 +65,15 @@ c. Access [http://127.0.0.1:5000/dashboard/home] in a browser to view the dashbo
 
 
 ## Function:
-Prescribing dashboard allows customers to clearly obtain the cost of drugs and the drugs with the highest sales volume, and provides the drugs prescribed by each PCT. 
-The dashboard also calculates Serum creatinine based on a patient's height and weight,giving patients more flexibility.  
+The prescribing dashboard allows customers to clearly obtain the cost of drugs and the drugs with the highest sales volume, and provides the drugs prescribed by each PCT. 
+The dashboard also calculates creatinine clearance based on a patient's height and weight, giving clinicians more flexibility.  
 
 
 ## Contribution:
 1. Average ACT cost developing & test --Fatima  
 2. Max quantity Item description & percentage bar showing of all prescriptions developing & test-- yutong&longdan
-3. number of unique items in datasets developing &test --Michael
-4. visualize the outcome on the interface -enze
+3. number of unique items in datasets developing & testing --Michael
+4. visualize the outcome on the interface -Enze
 5. Calculator & about pop-up --Michael & Longdan
 6. Front-end and Back-end linkage --Yutong
 7. Infection percentage --Fatima
@@ -81,7 +81,6 @@ The dashboard also calculates Serum creatinine based on a patient's height and w
    
 
 ## FAQ:
-There are different branches in this project. Tasks are submitted according to different task division and finally merged into the master. Viewers can enter different 
-branches to view codes according to different requirements.
+There are different branches in this project. Tasks are submitted according to different task division and finally merged into the master. Viewers can enter different branches to view codes according to different requirements.
 
 
