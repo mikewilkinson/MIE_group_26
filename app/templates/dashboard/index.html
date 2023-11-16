@@ -311,44 +311,51 @@
                     <input type="radio" name="sex" value="f"> Female
                 </label>
                 <p>Age of patient (years):</p>
-                <input type="number" min="1" max="120" name="patients-age" />
+                <input type="number" min="1" max="120" id="age" />
                 <br /><br />
                 <p>Weight of patient (kg):</p>
-                <input type="number" min="1" max="120" name="patients-weight" />
+                <input type="number" min="1" max="120" id="weight" />
                 <br /><br />
                 <p>Serum creatinine (micromol/L):</p>
-                <input type="number" min="1" max="120" name="patients-serum" />
+                <input type="number" min="1" max="120" id="creatinine" />
                 <br />
             </div>
-            <br />
+            <br>
+            <div>
+            <strong style="color:royalblue;" id="result"></strong>
+            </div>
             <hr />
             <!-- Add the id="calculate-btn" here -->
-            <button type="button" class="btn btn-primary" id="calculate-btn">Calculate</button>
+            <button type="button" class="btn btn-primary" id="calculate-btn" onclick="calculateCreatinineClearance()">Calculate </button>
+            <button type="button" class="btn btn-secondary" id="clear-btn" onclick="clearCalculator()">Clear</button>
             <button type="button" class="btn btn-danger" onclick="popup.hideCeatCalcFormPopup();">Close</button>
-        <p id="result" style="display:block;"></p>
+            
+        <br />
         </div>
     </div>
 </div>
 
-
-
 <script>
-    $(document).ready(function() {
-        $('#calculate-btn').click(function() {
-            var sex = $('input[name=sex]:checked').val();
-            var age = $('input[name=patients-age]').val();
-            var weight = $('input[name=patients-weight]').val();
-            var serum_creatinine = $('input[name=patients-serum]').val();
+  function calculateCreatinineClearance() {
+      // Check if sex is selected
+      var selectedSex = document.querySelector('input[name="sex"]:checked');
 
-            // Validate input fields
-            if (!sex || !age || !weight || !serum_creatinine) {
-                alert("All fields are required.");
-                return;
+      // Get input values
+      var age = document.getElementById('age').value;
+      var weight = document.getElementById('weight').value;
+      var creatinine = document.getElementById('creatinine').value;
+      var sex = selectedSex.value;
+
+       // Validate input fields
+            if (!selectedSex || !selectedSex.value || !age || !weight || !creatinine) {
+              alert("All fields are required.");
+              return;
             }
+
 
             age = parseFloat(age);
             weight = parseFloat(weight);
-            serum_creatinine = parseFloat(serum_creatinine);
+            creatinine = parseFloat(creatinine);
 
             if (age < 1 || age > 120) {
                 alert("Please enter an age between 1 and 120 years.");
@@ -360,32 +367,33 @@
                 return;
             }
 
-            if (serum_creatinine > 2000) {
+            if (creatinine > 2000) {
                 alert("Serum creatinine seems incorrect. Please check the value.");
                 return;
-            } else if (serum_creatinine > 500) {
-                if (!confirm("Serum creatinine is high (amber). Are you sure?")) {
+            } else if (creatinine > 500) {
+                if (!confirm("Serum creatinine is high. Are you sure?")) {
                     return;
                 }
             }
 
-            // Send an AJAX request to the server
-            $.ajax({
-                url: '/dashboard/calculate_clearance',
-                method: 'POST',
-                data: {
-                    sex: sex,
-                    age: age,
-                    weight: weight,
-                    serum_creatinine: serum_creatinine
-                },
-                success: function(response) {
-                    $('#result').text('Creatinine Clearance: ' + response.clearance);
-                    $('#result').show();
-                }
-            });
-        });
-    });
+      // Calculate creatinine clearance using Cockcroft-Gault equation
+      var result = (140 - age) * weight * 1.23/ creatinine;
+      if (sex == "f") {
+          result *= 0.85;
+      }
+
+      // Display the result
+      document.getElementById('result').innerHTML = 'Creatinine Clearance: ' + result.toFixed(1) + ' mL/min';
+  }
+
+  //Clear calculator
+  function clearCalculator() {
+        document.querySelector('input[name="sex"]:checked').checked = false;
+        document.getElementById('age').value = '';
+        document.getElementById('weight').value = '';
+        document.getElementById('creatinine').value = '';
+        document.getElementById('result').innerHTML = ''; 
+    }
 </script>
 
 
