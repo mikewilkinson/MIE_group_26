@@ -7,9 +7,9 @@ This project combines medical data with a user-friendly interface, supporting he
 ## Installation:
 1.Install Anaconda [Download Anaconda](https://www.anaconda.com/download) 
 
-2.Set the environment for using anaconda.
-  Install the Flask framework for Python and its related extensions:
-  Type the following commands into the Anaconda prompt or Terminal window (pressing the Enter key after each command). When installing these modules,
+2.Set the environment for using anaconda.  
+  Install the Flask framework for Python and its related extensions:  
+  Type the following commands into the Anaconda prompt or Terminal window (pressing the Enter key after each command). When installing these modules,  
   type (y) for yes when prompted.
 
 ```
