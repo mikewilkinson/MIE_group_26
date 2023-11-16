@@ -79,6 +79,19 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(antiprotozoal_per, '0.00', "Expected 0.00 for Antiprotozoal percentage")
         self.assertEqual(antihelmintics_per, '0.00', "Expected 0.00 for Antihelmintics percentage")
 
+class TestCreatinineClearance(unittest.TestCase):
+    def test_clearance_male(self):
+        """Test creatinine clearance calculation for male patients"""
+        result = calculate_clearance('m', 40, 70, 1.2)
+        expected = ((140 - 40) * 70) / (72 * 1.2)
+        self.assertAlmostEqual(result['clearance'], expected)
+
+    def test_clearance_female(self):
+        """Test creatinine clearance calculation for female patients"""
+        result = calculate_clearance('f', 40, 70, 1.2)
+        expected = (((140 - 40) * 70) / (72 * 1.2)) * 0.85
+        self.assertAlmostEqual(result['clearance'], expected)
+
 if __name__ == "__main__":
     unittest.main()
 
