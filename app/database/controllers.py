@@ -40,3 +40,10 @@ class Database:
     def get_average_cost(self):
         """Return average cost"""
         return round(float(db.session.query(func.avg(PrescribingData.ACT_cost)).first()[0]), 2)
+
+    def get_items_sum(self, items):
+        """Return sum of infection treatments with BNF codes 05"""
+        return db.session.query(func.sum(PrescribingData.items).label('item_sum')) \
+            .filter(PrescribingData.BNF_code.like(items)) \
+            .first()[0]
+
