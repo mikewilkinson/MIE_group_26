@@ -358,6 +358,57 @@
             </div>
           </div>
 
+<div class="row">
+  <div class="col-xl-6">
+        <!-- Search Box Card -->
+       <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">BNF Search</h6>
+            </div>
+            <div class="card-body">
+              <form action="/dashboard/home/" method="POST">
+                <div class="search-box">
+                    <input type="text" class="form-control mb-2" id="searchInput" name="search" placeholder="Enter BNF Name or Code" value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+              </form>
+
+<!-- create table for returned value -->
+         <table class="table mt-3" id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>BNF Code</th>
+                            <th>BNF Name</th>
+                            <th>Number of Practices</th>
+                            <th>Number of Items</th>
+                            <th>Average Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Results populated here -->
+                        {% if search_results %}
+                            {% for row in search_results %}
+                            <tr>
+                                <td>{{ row.BNF_code }}</td>
+                                <td>{{ row.BNF_name }}</td>
+                                <td>{{ row.num_practices}}</td>
+                                <td>{{ row.item_sum }}</td>
+                                <td>{{ row.avg_cost }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Show this row if there are no search results -->
+                        <tr>
+                            <td colspan="5">No search results to display.</td>
+                        </tr>
+                    {% endif %}
+                 </tbody>
+         </table>
+       </div>
+  </div>
+</div>
+
+
          <!-- Creatinine clearance calculator -->
 <div id="creat-calc">
     <div class="card">
@@ -365,14 +416,14 @@
             <h6 class="m-0 font-weight-bold text-primary">Creatinine clearance calculator</h6>
         </div>
         <div class="card-body">
-            <p>Sex of patient:</p>
             <div>
-                <label class="radio-inline">
-                    <input type="radio" name="sex" value="m"> Male
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="sex" value="f"> Female
-                </label>
+                <p> Sex of patient:</p>
+                <select name="sex" id="sex">
+                  <option disabled selected value>select...</option>
+                  <option value="m">Male</option>
+                  <option value="f">Female</option>
+                </select>
+                <br /><br />
                 <p>Age of patient (years):</p>
                 <input type="number" min="1" max="120" id="age" />
                 <br /><br />
@@ -400,17 +451,15 @@
 
 <script>
   function calculateCreatinineClearance() {
-      // Check if sex is selected
-      var selectedSex = document.querySelector('input[name="sex"]:checked');
-
+      
       // Get input values
       var age = document.getElementById('age').value;
       var weight = document.getElementById('weight').value;
       var creatinine = document.getElementById('creatinine').value;
-      var sex = selectedSex.value;
+      var sex = document.getElementById('sex').value;
 
        // Validate input fields
-            if (!selectedSex || !selectedSex.value || !age || !weight || !creatinine) {
+            if (!sex || !age || !weight || !creatinine) {
               alert("All fields are required.");
               return;
             }
