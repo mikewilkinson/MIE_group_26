@@ -43,7 +43,7 @@ b. Create a folder for the project on your machine, and
   
   For Mac: Open Terminal  
   
-c. Naviagte to the create folder using the command of **cd **  
+c. Naviagte to the create folder using the command of 'cd '
 
 d. Type   
 
@@ -65,8 +65,18 @@ c. Access [http://127.0.0.1:5000/dashboard/home] in a browser to view the dashbo
 
 
 ## Function:
-The prescribing dashboard allows customers to clearly obtain the cost of drugs and the drugs with the highest sales volume, and provides the drugs prescribed by each PCT. 
-The dashboard also calculates creatinine clearance based on a patient's height and weight, giving clinicians more flexibility.  
+### Navigation Bar
+1. The **about** pop up provide the dashboard and team introduction
+2. The **creatinine clearance calculator** helps to calculate based on a patient's height and weight etc info, giving clinicians more flexibility.
+3. The **Generate Report** is able for users to download the printable report in this page.
+
+### Main Page
+  
+1. The prescribing dashboard allows customers to clearly obtain the cost of drugs and the drugs with the highest sales volume
+2. Provides the drugs prescribed by each PCT.
+3. Update the info by BNF per PCT
+4. Bar chart for total antibiotic prescriptions for each GP practice in a PCT
+5. Search box by BNF code/ Name
 
 
 ## Contribution:
@@ -77,7 +87,11 @@ The dashboard also calculates creatinine clearance based on a patient's height a
 5. Calculator & about pop-up --Michael & Longdan
 6. Front-end and Back-end linkage --Yutong
 7. Infection percentage --Fatima
-8. Test suite --Enze
+8. Test suite --Enze & Michael 
+9. Bar chart for total antibiotic prescriptions for each GP practice in a PCT --Enze & Michael
+10. Search box by BNF code/ Name --Longdan & Yutong
+11. Printable report generation -- Fatima
+12. Test coverage -- Michael
    
 
 ## FAQ:
