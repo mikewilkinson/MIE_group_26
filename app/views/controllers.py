@@ -7,6 +7,7 @@ INSTITUTION:   University of Manchester (FBMH)
 DESCRIPTION:   Views module. Renders HTML pages and passes in associated data to render on the
                dashboard.
 """
+from flask import jsonify
 
 from flask import Blueprint, render_template, request
 from app.database.controllers import Database
@@ -48,26 +49,12 @@ def home():
     bar_values = bar_data[0]
     bar_labels = bar_data[1]
     title_data_items = generate_data_for_tiles()
-    max_value_percentage,top_prescribed_item = db_mod.max_quantity_percentage()
-    agerage_cost = db_mod.agerage_cost()
-    number_of_unique_items = db_mod.number_of_unique_items()
-    # calculate infection percentages
-    infection_chart_data = generate_infection_barchart_data()
-
-    chart_data = {
-        'tile_data': title_data_items,
-        'pct': {'data': bar_values, 'labels': bar_labels},
-        'pct_list': pcts,
-        'pct_data': selected_pct_data,
-        'infection_chart_data': infection_chart_data
-    }
 
     # render the HTML page passing in relevant data
     return render_template('dashboard/index.html', search_results=search_results, search_query=search_query, error_message=error_message,
                            tile_data=title_data_items,
                            pct={'data': bar_values, 'labels': bar_labels},
-                           pct_list=pcts, pct_data=selected_pct_data,max_value_percentage = max_value_percentage,
-                           top_prescribed_item=top_prescribed_item,agerage_cost=agerage_cost,number_of_unique_items=number_of_unique_items)
+                           pct_list=pcts, pct_data=selected_pct_data)
 
 def generate_data_for_tiles():
     """Generate the data for the four home page titles."""
@@ -83,21 +70,31 @@ def generate_barchart_data():
     pct_codes = [r[0] for r in pct_codes]
     return [data_values, pct_codes]
 
-def generate_infection_barchart_data():
-    # Calculate the percentage of each specific infection drug
-    infection_sum=db_mod.get_items_sum("05%")
-    antibacterial_per = format(round(db_mod.get_items_sum('0501%') / infection_sum, 4) * 100, '.2f')
-    antifungal_per = format(round(db_mod.get_items_sum('0502%') / infection_sum, 4) * 100, '.2f')
-    antiviral_per = format(round(db_mod.get_items_sum('0503%') / infection_sum, 4) * 100, '.2f')
-    antiprotozoal_per = format(round(db_mod.get_items_sum('0504%') / infection_sum, 4) * 100, '.2f')
-    antihelmintics_per = format(round(db_mod.get_items_sum('0505%') / infection_sum, 4) * 100, '.2f')
+@views.route('/calculate_clearance', methods=['POST'])
+def calculate_clearance():
+    # Retrieve the data sent from the frontend
+    sex = request.form.get('sex')
+    age = float(request.form.get('age'))
+    weight = float(request.form.get('weight'))
+    serum_creatinine = float(request.form.get('serum_creatinine'))
 
-    result =  {'Antibacterial': antibacterial_per, 'Antifungal': antifungal_per, 'Antiviral': antiviral_per,
-            'Antoprotozoal': antiprotozoal_per, 'Antihelmintics': antihelmintics_per}
-
-    print(result)
-
-    return result
+    # ... rest of the code ...
 
 
+    # Calculate creatinine clearance using the Cockcroft Gault equation
+    if sex == 'm':
+        clearance = ((140 - age) * weight) / (72 * serum_creatinine)
+    else:
+        clearance = (((140 - age) * weight) / (72 * serum_creatinine)) * 0.85
 
+    # Return the result to the frontend
+    return jsonify({'clearance': clearance})
+
+
+@views.route('/get_antibiotics_data', methods=['POST'])
+def get_antibiotics_data():
+    selected_pct = request.json.get('selected_pct')
+    antibiotics_data = db_mod.get_antibiotics_prescriptions_by_practice(selected_pct)
+    # JSON
+    data = [{'practice': record.practice, 'total_quantity': record.total_quantity} for record in antibiotics_data]
+    return jsonify(data)

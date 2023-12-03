@@ -7,7 +7,7 @@ INSTITUTION:   University of Manchester (FBMH)
 DESCRIPTION:   Contains the Database class that contains all the methods used for accessing the database
 """
 
-from sqlalchemy.sql import func,distinct
+from sqlalchemy.sql import func
 from flask import Blueprint
 
 from app import db
@@ -33,6 +33,17 @@ class Database:
         """Return all the data for a given PCT."""
         return db.session.query(PrescribingData).filter(PrescribingData.PCT == pct).limit(n).all()
 
+    def get_antibiotics_prescriptions_by_practice(self, selected_pct):
+        """Query the total quantity of antibiotics for each GP practice in the selected PCT."""
+        antibiotics_prescriptions = db.session.query(
+            PrescribingData.practice,
+            func.sum(PrescribingData.quantity).label('total_quantity')
+        ).filter(
+            PrescribingData.PCT == selected_pct,
+            PrescribingData.BNF_code.startswith('05')
+        ).group_by(PrescribingData.practice).all()
+
+        return antibiotics_prescriptions
     def max_quantity_percentage(self):
         """Return the top precribed item."""
         # 求和
