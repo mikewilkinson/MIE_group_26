@@ -1,85 +1,46 @@
 """
-NAME:          views\controllers.py
+NAME:          database\controllers.py
 AUTHOR:        Alan Davies (Lecturer Health Data Science)
 EMAIL:         alan.davies-2@manchester.ac.uk
-DATE:          18/12/2019
+DATE:          17/12/2019
 INSTITUTION:   University of Manchester (FBMH)
-DESCRIPTION:   Views module. Renders HTML pages and passes in associated data to render on the
-               dashboard.
+DESCRIPTION:   Contains the Database class that contains all the methods used for accessing the database
 """
-from flask import jsonify
 
-from flask import Blueprint, render_template, request
-from app.database.controllers import Database
+from sqlalchemy.sql import func
+from flask import Blueprint
 
-views = Blueprint('dashboard', __name__, url_prefix='/dashboard')
+from app import db
+from app.database.models import PrescribingData, PracticeData
 
-# get the database class
-db_mod = Database()
+database = Blueprint('dbutils', __name__, url_prefix='/dbutils')
 
-# Set the route and accepted methods
-@views.route('/home/', methods=['GET', 'POST'])
-def home():
-    """Render the home page of the dashboard passing in data to populate dashboard."""
-    pcts = [r[0] for r in db_mod.get_distinct_pcts()]
-    if request.method == 'POST':
-        # if selecting PCT for table, update based on user choice
-        form = request.form
-        selected_pct_data = db_mod.get_n_data_for_PCT(str(form['pct-option']), 5)
-    else:
-        # pick a default PCT to show
-        selected_pct_data = db_mod.get_n_data_for_PCT(str(pcts[0]), 5)
+class Database:
+    """Class for managing database queries."""
+    def get_total_number_items(self):
+        """Return the total number of prescribed items."""
+        return int(db.session.query(func.sum(PrescribingData.items).label('total_items')).first()[0])
 
-    # prepare data
-    bar_data = generate_barchart_data()
-    bar_values = bar_data[0]
-    bar_labels = bar_data[1]
-    title_data_items = generate_data_for_tiles()
+    def get_prescribed_items_per_pct(self):
+        """Return the total items per PCT."""
+        return db.session.query(func.sum(PrescribingData.items).label('item_sum')).group_by(PrescribingData.PCT).all()
 
-    # render the HTML page passing in relevant data
-    return render_template('dashboard/index.html', tile_data=title_data_items,
-                           pct={'data': bar_values, 'labels': bar_labels},
-                           pct_list=pcts, pct_data=selected_pct_data)
+    def get_distinct_pcts(self):
+        """Return the distinct PCT codes."""
+        return db.session.query(PrescribingData.PCT).distinct().all()
 
-def generate_data_for_tiles():
-    """Generate the data for the four home page titles."""
-    return [db_mod.get_total_number_items()]
+    def get_n_data_for_PCT(self, pct, n):
+        """Return all the data for a given PCT."""
+        return db.session.query(PrescribingData).filter(PrescribingData.PCT == pct).limit(n).all()
 
-def generate_barchart_data():
-    """Generate the data needed to populate the barchart."""
-    data_values = db_mod.get_prescribed_items_per_pct()
-    pct_codes = db_mod.get_distinct_pcts()
+    def get_antibiotics_prescriptions_by_practice(self, selected_pct):
+        """Query the total quantity of antibiotics for each GP practice in the selected PCT."""
+        antibiotics_prescriptions = db.session.query(
+            PrescribingData.practice,
+            func.sum(PrescribingData.quantity).label('total_quantity')
+        ).filter(
+            PrescribingData.PCT == selected_pct,
+            PrescribingData.BNF_code.startswith('05')
+        ).group_by(PrescribingData.practice).all()
 
-    # convert into lists and return
-    data_values = [r[0] for r in data_values]
-    pct_codes = [r[0] for r in pct_codes]
-    return [data_values, pct_codes]
-
-@views.route('/calculate_clearance', methods=['POST'])
-def calculate_clearance():
-    # Retrieve the data sent from the frontend
-    sex = request.form.get('sex')
-    age = float(request.form.get('age'))
-    weight = float(request.form.get('weight'))
-    serum_creatinine = float(request.form.get('serum_creatinine'))
-
-    # ... rest of the code ...
-
-
-    # Calculate creatinine clearance using the Cockcroft Gault equation
-    if sex == 'm':
-        clearance = ((140 - age) * weight) / (72 * serum_creatinine)
-    else:
-        clearance = (((140 - age) * weight) / (72 * serum_creatinine)) * 0.85
-
-    # Return the result to the frontend
-    return jsonify({'clearance': clearance})
-
-
-@views.route('/get_antibiotics_data', methods=['POST'])
-def get_antibiotics_data():
-    selected_pct = request.json.get('selected_pct')
-    antibiotics_data = db_mod.get_antibiotics_prescriptions_by_practice(selected_pct)
-    # JSON
-    data = [{'practice': record.practice, 'total_quantity': record.total_quantity} for record in antibiotics_data]
-    return jsonify(data)
+        return antibiotics_prescriptions
