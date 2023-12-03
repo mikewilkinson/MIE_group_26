@@ -59,3 +59,25 @@ class Database:
             .filter(PrescribingData.BNF_code.like(items)) \
             .first()[0]
 
+    def search_drug(self, search_query):
+        """
+        Search for drugs based on BNF code or drug name.
+        """
+        search_result = db.session.query(
+            PrescribingData.BNF_code,
+            PrescribingData.BNF_name,
+            func.count(PrescribingData.practice).label('num_practices'),
+            func.sum(PrescribingData.items).label('item_sum'),
+            (func.avg(PrescribingData.ACT_cost)/func.count(PrescribingData.items)).label('avg_cost')
+        ).filter(
+            db.or_(
+                PrescribingData.BNF_code.like(f'%{search_query}%'),
+                PrescribingData.BNF_name.like(f'%{search_query}%')
+            )
+        ).group_by(
+            PrescribingData.BNF_code,
+            PrescribingData.BNF_name
+        ).all()
+
+        return search_result
+

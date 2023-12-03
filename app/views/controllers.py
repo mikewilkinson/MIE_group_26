@@ -21,13 +21,27 @@ db_mod = Database()
 def home():
     """Render the home page of the dashboard passing in data to populate dashboard."""
     pcts = [r[0] for r in db_mod.get_distinct_pcts()]
+
+    selected_pct_data = []
+    search_results = []
+    search_query = ''
+    error_message = None  # Initialize an error message variable
     if request.method == 'POST':
-        # if selecting PCT for table, update based on user choice
         form = request.form
-        selected_pct_data = db_mod.get_n_data_for_PCT(str(form['pct-option']), 5)
-    else:
-        # pick a default PCT to show
-        selected_pct_data = db_mod.get_n_data_for_PCT(str(pcts[0]), 5)
+        if 'pct-option' in form and form['pct-option']:
+            # if selecting PCT for table, update based on user choice
+            selected_pct_data = db_mod.get_n_data_for_PCT(str(form['pct-option']), 5)
+        elif 'search' in form and form['search']:
+            # if performing a search, update based on user input
+            search_query = form['search']
+            search_results = db_mod.search_drug(search_query)
+            if not search_results:
+                error_message = "No results found for your search."
+            # else branch is not needed here because the 'pct-option' and 'search' fields are mutually exclusive
+
+        if not selected_pct_data and not request.method == 'POST':
+            # pick a default PCT to show on initial GET request or if no POST data is provided
+            selected_pct_data = db_mod.get_n_data_for_PCT(str(pcts[0]), 5)
 
     # prepare data
     bar_data = generate_barchart_data()
@@ -49,7 +63,8 @@ def home():
     }
 
     # render the HTML page passing in relevant data
-    return render_template('dashboard/index.html', tile_data=title_data_items,
+    return render_template('dashboard/index.html', search_results=search_results, search_query=search_query, error_message=error_message,
+                           tile_data=title_data_items,
                            pct={'data': bar_values, 'labels': bar_labels},
                            pct_list=pcts, pct_data=selected_pct_data,max_value_percentage = max_value_percentage,
                            top_prescribed_item=top_prescribed_item,agerage_cost=agerage_cost,number_of_unique_items=number_of_unique_items)

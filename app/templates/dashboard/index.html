@@ -359,6 +359,56 @@
               </div>
           </div>
 
+<div class="row">
+  <div class="col-xl-6">
+        <!-- Search Box Card -->
+       <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">BNF Search</h6>
+            </div>
+            <div class="card-body">
+              <form action="/dashboard/home/" method="POST">
+                <div class="search-box">
+                    <input type="text" class="form-control mb-2" id="searchInput" name="search" placeholder="Enter BNF Name or Code" value="{{ search_query }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+              </form>
+
+<!-- create table for returned value -->
+         <table class="table mt-3" id="resultTable">
+                    <thead>
+                        <tr>
+                            <th>BNF Code</th>
+                            <th>BNF Name</th>
+                            <th>Number of Practices</th>
+                            <th>Number of Items</th>
+                            <th>Average Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Results populated here -->
+                        {% if search_results %}
+                            {% for row in search_results %}
+                            <tr>
+                                <td>{{ row.BNF_code }}</td>
+                                <td>{{ row.BNF_name }}</td>
+                                <td>{{ row.num_practices}}</td>
+                                <td>{{ row.item_sum }}</td>
+                                <td>{{ row.avg_cost }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <!-- Show this row if there are no search results -->
+                        <tr>
+                            <td colspan="5">No search results to display.</td>
+                        </tr>
+                    {% endif %}
+                 </tbody>
+         </table>
+       </div>
+  </div>
+</div>
+
 
          <!-- Creatinine clearance calculator -->
 <div id="creat-calc">
