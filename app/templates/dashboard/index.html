@@ -365,14 +365,14 @@
             <h6 class="m-0 font-weight-bold text-primary">Creatinine clearance calculator</h6>
         </div>
         <div class="card-body">
-            <p>Sex of patient:</p>
             <div>
-                <label class="radio-inline">
-                    <input type="radio" name="sex" value="m"> Male
-                </label>
-                <label class="radio-inline">
-                    <input type="radio" name="sex" value="f"> Female
-                </label>
+                <p> Sex of patient:</p>
+                <select name="sex" id="sex">
+                  <option disabled selected value>select...</option>
+                  <option value="m">Male</option>
+                  <option value="f">Female</option>
+                </select>
+                <br /><br />
                 <p>Age of patient (years):</p>
                 <input type="number" min="1" max="120" id="age" />
                 <br /><br />
@@ -400,17 +400,15 @@
 
 <script>
   function calculateCreatinineClearance() {
-      // Check if sex is selected
-      var selectedSex = document.querySelector('input[name="sex"]:checked');
-
+      
       // Get input values
       var age = document.getElementById('age').value;
       var weight = document.getElementById('weight').value;
       var creatinine = document.getElementById('creatinine').value;
-      var sex = selectedSex.value;
+      var sex = document.getElementById('sex').value;
 
        // Validate input fields
-            if (!selectedSex || !selectedSex.value || !age || !weight || !creatinine) {
+            if (!sex || !age || !weight || !creatinine) {
               alert("All fields are required.");
               return;
             }

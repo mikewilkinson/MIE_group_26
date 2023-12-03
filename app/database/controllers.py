@@ -34,7 +34,7 @@ class Database:
         return db.session.query(PrescribingData).filter(PrescribingData.PCT == pct).limit(n).all()
 
     def max_quantity_percentage(self):
-        """Return the average ACT cost."""
+        """Return the top precribed item."""
         # 求和
         column_sum = db.session.query(func.sum(PrescribingData.quantity)).scalar()
         # 最大值
