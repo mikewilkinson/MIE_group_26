@@ -602,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   //Clear calculator
   function clearCalculator() {
-        document.querySelector('input[name="sex"]:checked').checked = false;
+        document.getElementById('sex').value='';
         document.getElementById('age').value = '';
         document.getElementById('weight').value = '';
         document.getElementById('creatinine').value = '';

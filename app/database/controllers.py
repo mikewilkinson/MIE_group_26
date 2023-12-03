@@ -44,6 +44,7 @@ class Database:
         ).group_by(PrescribingData.practice).all()
 
         return antibiotics_prescriptions
+    
     def max_quantity_percentage(self):
         """Return the top precribed item."""
         # 求和

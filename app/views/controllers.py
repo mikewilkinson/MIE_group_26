@@ -44,17 +44,20 @@ def home():
             # pick a default PCT to show on initial GET request or if no POST data is provided
             selected_pct_data = db_mod.get_n_data_for_PCT(str(pcts[0]), 5)
 
-    # prepare data
+     # prepare data
     bar_data = generate_barchart_data()
     bar_values = bar_data[0]
     bar_labels = bar_data[1]
     title_data_items = generate_data_for_tiles()
+    max_value_percentage,top_prescribed_item = db_mod.max_quantity_percentage()
+    agerage_cost = db_mod.agerage_cost()
+    number_of_unique_items = db_mod.number_of_unique_items()
 
     # render the HTML page passing in relevant data
-    return render_template('dashboard/index.html', search_results=search_results, search_query=search_query, error_message=error_message,
-                           tile_data=title_data_items,
+    return render_template('dashboard/index.html', tile_data=title_data_items,
                            pct={'data': bar_values, 'labels': bar_labels},
-                           pct_list=pcts, pct_data=selected_pct_data)
+                           pct_list=pcts, pct_data=selected_pct_data,max_value_percentage = max_value_percentage,
+                           top_prescribed_item=top_prescribed_item,agerage_cost=agerage_cost,number_of_unique_items=number_of_unique_items)
 
 def generate_data_for_tiles():
     """Generate the data for the four home page titles."""
@@ -70,26 +73,21 @@ def generate_barchart_data():
     pct_codes = [r[0] for r in pct_codes]
     return [data_values, pct_codes]
 
-@views.route('/calculate_clearance', methods=['POST'])
-def calculate_clearance():
-    # Retrieve the data sent from the frontend
-    sex = request.form.get('sex')
-    age = float(request.form.get('age'))
-    weight = float(request.form.get('weight'))
-    serum_creatinine = float(request.form.get('serum_creatinine'))
+def generate_infection_barchart_data():
+    # Calculate the percentage of each specific infection drug
+    infection_sum=db_mod.get_items_sum("05%")
+    antibacterial_per = format(round(db_mod.get_items_sum('0501%') / infection_sum, 4) * 100, '.2f')
+    antifungal_per = format(round(db_mod.get_items_sum('0502%') / infection_sum, 4) * 100, '.2f')
+    antiviral_per = format(round(db_mod.get_items_sum('0503%') / infection_sum, 4) * 100, '.2f')
+    antiprotozoal_per = format(round(db_mod.get_items_sum('0504%') / infection_sum, 4) * 100, '.2f')
+    antihelmintics_per = format(round(db_mod.get_items_sum('0505%') / infection_sum, 4) * 100, '.2f')
 
-    # ... rest of the code ...
+    result =  {'Antibacterial': antibacterial_per, 'Antifungal': antifungal_per, 'Antiviral': antiviral_per,
+            'Antoprotozoal': antiprotozoal_per, 'Antihelmintics': antihelmintics_per}
 
+    print(result)
 
-    # Calculate creatinine clearance using the Cockcroft Gault equation
-    if sex == 'm':
-        clearance = ((140 - age) * weight) / (72 * serum_creatinine)
-    else:
-        clearance = (((140 - age) * weight) / (72 * serum_creatinine)) * 0.85
-
-    # Return the result to the frontend
-    return jsonify({'clearance': clearance})
-
+    return result
 
 @views.route('/get_antibiotics_data', methods=['POST'])
 def get_antibiotics_data():
