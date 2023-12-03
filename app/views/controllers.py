@@ -52,9 +52,20 @@ def home():
     max_value_percentage,top_prescribed_item = db_mod.max_quantity_percentage()
     agerage_cost = db_mod.agerage_cost()
     number_of_unique_items = db_mod.number_of_unique_items()
+    # calculate infection percentages
+    infection_chart_data = generate_infection_barchart_data()
 
+    chart_data = {
+        'tile_data': title_data_items,
+        'pct': {'data': bar_values, 'labels': bar_labels},
+        'pct_list': pcts,
+        'pct_data': selected_pct_data,
+        'infection_chart_data': infection_chart_data
+    }
+    
     # render the HTML page passing in relevant data
-    return render_template('dashboard/index.html', tile_data=title_data_items,
+    return render_template('dashboard/index.html', search_results=search_results, search_query=search_query, error_message=error_message,
+                           tile_data=title_data_items,
                            pct={'data': bar_values, 'labels': bar_labels},
                            pct_list=pcts, pct_data=selected_pct_data,max_value_percentage = max_value_percentage,
                            top_prescribed_item=top_prescribed_item,agerage_cost=agerage_cost,number_of_unique_items=number_of_unique_items)
